@@ -1,0 +1,25 @@
+{
+  "name": "nodejs-base",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.5.0",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-joi-validator": "^2.0.0",
+    "express-validation": "^1.0.2",
+    "joi": "^13.0.1",
+    "joigoose": "^2.0.0",
+    "lodash": "^4.17.4",
+    "md5": "^2.2.1",
+    "mongodb": "^2.2.33",
+    "mongoose": "^4.12.5"
+  }
+}
