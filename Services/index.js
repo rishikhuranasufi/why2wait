@@ -3,5 +3,6 @@
 module.exports = {
     ClientService: require('./ClientService'),
     CustomerService: require('./CustomerService'),
-    CountryService: require('./CountryService')
+    CountryService: require('./CountryService'),
+    CustomerQueueService: require('./CustomerQueueService')
 }

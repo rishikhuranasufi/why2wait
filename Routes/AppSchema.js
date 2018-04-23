@@ -67,3 +67,19 @@ exports.add_service_provider_schema = {
         service_provider: Joi.string().required()
     }
 }
+
+exports.get_service_provider_schema = {
+    query: {
+        service_name: Joi.string().required()
+    }
+}
+
+exports.join_queue_schema = {
+    body: {
+        service_name: Joi.string().required(),
+        service_provider: Joi.string().required(),
+        name: Joi.string().required(),
+        country_code: Joi.string().required(),
+        phone_number: Joi.string().required()
+    }
+}

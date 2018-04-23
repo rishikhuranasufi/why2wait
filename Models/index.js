@@ -3,5 +3,6 @@
 module.exports = {
     ClientModel: require('./ClientRegisterModel'),
     CustomerModel: require('./CustomerModel'),
-    CountryModel: require('./CountryModel')
+    CountryModel: require('./CountryModel'),
+    CustomerQueueModel: require('./CustomerQueueModel')
 }

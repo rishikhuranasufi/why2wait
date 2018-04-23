@@ -5,6 +5,8 @@ var UniversalFunctions = require('../Utils/UniversalFunctions');
 var Service = require('../Services');
 var AppConstants = require('../Config/appConstants');
 
+var mongoose = require('mongoose');
+
 var _ = require('lodash');
 
 var addService = function(payloadData, callback){
@@ -64,35 +66,9 @@ var addServiceProvider = function(payloadData, callback){
     console.log("payloadData ",payloadData);
     var dataToSave = payloadData;
     var serviceData;
+    var checkProvider = [];
 
     async.series([
-
-        function(cb){
-            
-            var criteria = {
-                service_name: dataToSave.service_name,
-                service_provider: dataToSave.service_provider
-            };
-            var projection = {};
-
-            var options = {
-                lean: true
-            };
-
-            Service.CustomerService.getService(criteria, projection, options, function(err, dataFromDB){
-                 if(err){
-                    cb(err);
-                }
-                else if(dataFromDB && dataFromDB.length > 0){
-                    cb(AppConstants.STATUS_MSG.ERROR.PROVIDER_ALREADY_EXIST);
-                    }
-                    else{
-                        cb();
-                    }
-                    
-                })
-
-        },
 
         function(cb){
             
@@ -110,11 +86,47 @@ var addServiceProvider = function(payloadData, callback){
                     cb(err);
                 }
                 else if(dataFromDB && dataFromDB.length > 0){
+                    _.forEach(dataFromDB[0].service_provider, function(value, key){
+                            if(value.service_provider == dataToSave.service_provider){
+                                checkProvider.push(value);
+                            }
+                        })  
+                        if(checkProvider.length > 0){
+                            cb(AppConstants.STATUS_MSG.ERROR.PROVIDER_ALREADY_EXIST);                  
+                        }
+                        else{
+                            cb();
+                        } 
+                    }
+                    else{
+                        cb(AppConstants.STATUS_MSG.ERROR.INVALID_REQUEST)
+                    }                           
+                    
+                })
+
+        },
+
+        function(cb){
+            var criteria = {
+                service_name: dataToSave.service_name
+            };
+            var projection = {};
+
+            var options = {
+                lean: true
+            };
+
+            Service.CustomerService.getService(criteria, projection, options, function(err, dataFromDB){
+                 if(err){                 
+                    cb(err);
+                }
+                else if(dataFromDB && dataFromDB.length > 0){
                     console.log('dataFromDB', dataFromDB);
                     dataToSet = dataFromDB[0];
-                    dataToSet.service_provider.push(dataToSave.service_provider);
-
-                    console.log('dataToSet', dataToSet);
+                    dataToSet.service_provider.push({
+                        _id: new mongoose.Types.ObjectId(),
+                        service_provider: dataToSave.service_provider
+                    });
 
                     var criteria1 = {
                         service_name: dataToSet.service_name
@@ -131,7 +143,7 @@ var addServiceProvider = function(payloadData, callback){
                         if(err){
                             cb(err);
                         }
-                        else{
+                        else{                            
                             serviceData = data;
                             cb();
                         }
@@ -189,8 +201,90 @@ var getAllServices = function(payloadData, callback){
     })
 }
 
+var getAllServiceProviders = function(payloadData, callback){
+    console.log("payloadData ",payloadData);
+    var dataToSave = payloadData;
+    var allServiceProviders;
+    async.series([
+        function(cb){
+            
+            var criteria = {
+                service_name: dataToSave.service_name
+            };
+            var projection = {};
+
+            var options = {
+                lean: true
+            };
+
+            Service.CustomerService.getService(criteria, projection, options, function(err, dataFromDB){
+                 if(err){
+                    cb(err);
+                }
+                else if(dataFromDB && dataFromDB.length > 0){
+                        console.log('dataFromDB',dataFromDB);
+                        allServiceProviders = dataFromDB[0].service_provider;
+                        cb();
+                    }
+                    else{
+                        cb(AppConstants.STATUS_MSG.ERROR.NOT_FOUND);
+                    }            
+                })
+        }
+
+    ], function(err, success){
+        if(err) {
+            callback(err);
+        } else {
+            callback(null, allServiceProviders);
+        }
+    })
+}
+
+var joinQueue = function(payloadData, callback){
+    console.log("payloadData ",payloadData);
+    var dataToSave = payloadData;
+    var allServiceProviders;
+    async.series([
+        function(cb){
+            
+            var criteria = {
+                service_name: dataToSave.service_name
+            };
+            var projection = {};
+
+            var options = {
+                lean: true
+            };
+
+            Service.CustomerService.getService(criteria, projection, options, function(err, dataFromDB){
+                 if(err){
+                    cb(err);
+                }
+                else if(dataFromDB && dataFromDB.length > 0){
+                        console.log('dataFromDB',dataFromDB);
+                        allServiceProviders = dataFromDB[0].service_provider;
+                        cb();
+                    }
+                    else{
+                        cb(AppConstants.STATUS_MSG.ERROR.NOT_FOUND);
+                    }            
+                })
+        }
+
+    ], function(err, success){
+        if(err) {
+            callback(err);
+        } else {
+            callback(null, allServiceProviders);
+        }
+    })
+}
+
 module.exports = {
     addService: addService,
     addServiceProvider: addServiceProvider,
-    getAllServices: getAllServices
+    getAllServices: getAllServices,
+    getAllServiceProviders: getAllServiceProviders,
+    joinQueue: joinQueue
 }

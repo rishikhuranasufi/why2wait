@@ -121,6 +121,28 @@ app.get('/api/customer/getAllServices', function(req, res){
     })
 });
 
+app.get('/api/customer/getAllServiceProviders', validate(appSchema.get_service_provider_schema), function(req, res){
+    Controller.CustomerController.getAllServiceProviders(req.query, function(err, data){
+        if(err){
+            res.json(err);
+        }
+        else{
+            res.send(UniversalFunctions.sendSuccess(AppConstants.STATUS_MSG.SUCCESS.DEFAULT,data));
+        }
+    })
+});
+
+app.post('/api/customer/joinQueue', validate(appSchema.join_queue_schema), function(req, res){
+    Controller.CustomerController.joinQueue(req.body, function(err, data){
+        if(err){
+            res.json(err);
+        }
+        else{
+            res.send(UniversalFunctions.sendSuccess(AppConstants.STATUS_MSG.SUCCESS.DEFAULT,data));
+        }
+    })
+});
+
 
 // console.log("environment variable ===", process.env.PATH);
 console.log("environment variable MONGO_USER ===", process.env.TEMP);
